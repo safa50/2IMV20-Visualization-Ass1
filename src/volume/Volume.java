@@ -63,21 +63,6 @@ public class Volume {
         return dimZ;
     }
 
-    public double getDiagonal() {
-        return Math.sqrt((dimX * dimX) + (dimY * dimY) + (dimZ * dimZ));
-    }
-
-    public int getMaxDim() {
-        int[] dimensions = new int[]{dimX, dimY, dimZ};
-        int maxDimension = dimensions[0];
-        for (int i = 0; i < dimensions.length; i++) {
-            if (dimensions[i] > maxDimension) {
-                maxDimension = dimensions[i];
-            }
-        }
-        return maxDimension;
-    }
-
     public short getMinimum() {
         short minimum = data[0];
         for (int i = 0; i < data.length; i++) {

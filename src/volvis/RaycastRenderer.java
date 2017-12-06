@@ -302,7 +302,7 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
         // by increasing the step size.
         // If not toggeling, step size is one for good results
         if (this.interactiveMode) {
-            this.step = 20;
+            this.step = 15;
         } else if (!this.interactiveMode) {
             this.step = 1;
         }
@@ -379,7 +379,7 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
         // by increasing the step size.
         // If not toggeling, step size is one for good results
         if (this.interactiveMode) {
-            this.step = 20;
+            this.step = 15;
         } else if (!this.interactiveMode) {
             this.step = 1;
         }
@@ -388,7 +388,7 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
             for (int i = 0; i < image.getWidth(); i++) {
 
                 TFColor previousColor = new TFColor();
-                TFColor nextColor = new TFColor();
+                TFColor newColor = new TFColor();
 
                 for (int k = -volume.getDimZ(); k < volume.getDimZ(); k += step) {
                     pixelCoord[0] = uVec[0] * (i - imageCenter) + vVec[0] * (j - imageCenter)
@@ -402,21 +402,21 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
                     TFColor color = tFunc.getColor(val);
 
                     // Composite from back-to-front like in slides lecture 2
-                    nextColor.b = color.b * color.a + (1 - color.a) * previousColor.b;
-                    nextColor.g = color.g * color.a + (1 - color.a) * previousColor.g;
-                    nextColor.r = color.r * color.a + (1 - color.a) * previousColor.r;
+                    newColor.b = color.b * color.a + (1 - color.a) * previousColor.b;
+                    newColor.g = color.g * color.a + (1 - color.a) * previousColor.g;
+                    newColor.r = color.r * color.a + (1 - color.a) * previousColor.r;
 
-                    nextColor.a = (1 - color.a) * previousColor.a;
+                    newColor.a = (1 - color.a) * previousColor.a;
 
-                    previousColor = nextColor;
+                    previousColor = newColor;
 
                 }
 
                 // BufferedImage expects a pixel color packed as ARGB in an int
-                int c_alpha = 1 - nextColor.a <= 1.0 ? (int) Math.floor((1 - nextColor.a) * 255) : 255;
-                int c_red = nextColor.r <= 1.0 ? (int) Math.floor(nextColor.r * 255) : 255;
-                int c_green = nextColor.g <= 1.0 ? (int) Math.floor(nextColor.g * 255) : 255;
-                int c_blue = nextColor.b <= 1.0 ? (int) Math.floor(nextColor.b * 255) : 255;
+                int c_alpha = 1 - newColor.a <= 1.0 ? (int) Math.floor((1 - newColor.a) * 255) : 255;
+                int c_red = newColor.r <= 1.0 ? (int) Math.floor(newColor.r * 255) : 255;
+                int c_green = newColor.g <= 1.0 ? (int) Math.floor(newColor.g * 255) : 255;
+                int c_blue = newColor.b <= 1.0 ? (int) Math.floor(newColor.b * 255) : 255;
                 int pixelColor = (c_alpha << 24) | (c_red << 16) | (c_green << 8) | c_blue;
                 image.setRGB(i, j, pixelColor);
             }
@@ -455,7 +455,7 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
         // by increasing the step size.
         // If not toggeling, step size is one for good results
         if (this.interactiveMode) {
-            this.step = 20;
+            this.step = 15;
         } else if (!this.interactiveMode) {
             this.step = 1;
         }
@@ -465,7 +465,7 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
             for (int i = 0; i < image.getWidth(); i++) {
 
                 TFColor previousColor = new TFColor();
-                TFColor nextColor = new TFColor();
+                TFColor newColor = new TFColor();
 
                 for (int k = -volume.getDimZ(); k < volume.getDimZ(); k += step) {
                     pixelCoord[0] = uVec[0] * (i - imageCenter) + vVec[0] * (j - imageCenter)
@@ -512,7 +512,7 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
                     // Phong Shading Model
                     if (shading) {
                         if (gradMag > 0.0 && voxelColor.a > 0.0) {
-                            //Vector V = L = H, because the light is coming from us but in reversed order
+                            //Vector V = L = H, because the light is coming from us so flip view vector V.
                             double[] V = new double[3];
                             VectorMath.setVector(V, -viewMatrix[2], -viewMatrix[6], -viewMatrix[10]);
 
@@ -546,26 +546,26 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
                             }
                         }
 
-                        nextColor.r = voxelColor.a * voxelColor.r + (1 - voxelColor.a) * previousColor.r;
-                        nextColor.g = voxelColor.a * voxelColor.g + (1 - voxelColor.a) * previousColor.g;
-                        nextColor.b = voxelColor.a * voxelColor.b + (1 - voxelColor.a) * previousColor.b;
+                        newColor.r = voxelColor.a * voxelColor.r + (1 - voxelColor.a) * previousColor.r;
+                        newColor.g = voxelColor.a * voxelColor.g + (1 - voxelColor.a) * previousColor.g;
+                        newColor.b = voxelColor.a * voxelColor.b + (1 - voxelColor.a) * previousColor.b;
 
                     } else {
-                        nextColor.r = voxelColor.a * color.r + (1 - voxelColor.a) * previousColor.r;
-                        nextColor.g = voxelColor.a * color.g + (1 - voxelColor.a) * previousColor.g;
-                        nextColor.b = voxelColor.a * color.b + (1 - voxelColor.a) * previousColor.b;
+                        newColor.r = voxelColor.a * color.r + (1 - voxelColor.a) * previousColor.r;
+                        newColor.g = voxelColor.a * color.g + (1 - voxelColor.a) * previousColor.g;
+                        newColor.b = voxelColor.a * color.b + (1 - voxelColor.a) * previousColor.b;
                     }
 
-                    nextColor.a = (1 - voxelColor.a) * previousColor.a;
+                    newColor.a = (1 - voxelColor.a) * previousColor.a;
 
-                    previousColor = nextColor;
+                    previousColor = newColor;
                 }
 
                 // BufferedImage expects a pixel color packed as ARGB in an int
-                int c_alpha = 1 - nextColor.a <= 1.0 ? (int) Math.floor((1 - nextColor.a) * 255) : 255;
-                int c_red = nextColor.r <= 1.0 ? (int) Math.floor(nextColor.r * 255) : 255;
-                int c_green = nextColor.g <= 1.0 ? (int) Math.floor(nextColor.g * 255) : 255;
-                int c_blue = nextColor.b <= 1.0 ? (int) Math.floor(nextColor.b * 255) : 255;
+                int c_alpha = 1 - newColor.a <= 1.0 ? (int) Math.floor((1 - newColor.a) * 255) : 255;
+                int c_red = newColor.r <= 1.0 ? (int) Math.floor(newColor.r * 255) : 255;
+                int c_green = newColor.g <= 1.0 ? (int) Math.floor(newColor.g * 255) : 255;
+                int c_blue = newColor.b <= 1.0 ? (int) Math.floor(newColor.b * 255) : 255;
                 int pixelColor = (c_alpha << 24) | (c_red << 16) | (c_green << 8) | c_blue;
                 image.setRGB(i, j, pixelColor);
             }
