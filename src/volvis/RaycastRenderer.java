@@ -513,8 +513,7 @@ public class RaycastRenderer extends Renderer implements TFChangeListener {
                     if (shading) {
                         if (gradMag > 0.0 && voxelColor.a > 0.0) {
                             //Vector V = L = H, because the light is coming from us so flip view vector V.
-                            double[] V = new double[3];
-                            VectorMath.setVector(V, -viewMatrix[2], -viewMatrix[6], -viewMatrix[10]);
+                            double[] V = new double[]{-viewVec[0], -viewVec[1], -viewVec[2]};
 
                             // According to the paper of Levoy, vector L and H are normalized vectors.
                             // That's why we divide it by the length of V to normalize it.
